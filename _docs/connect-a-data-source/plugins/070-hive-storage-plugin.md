@@ -1,6 +1,6 @@
 ---
 title: "Hive Storage Plugin"
-date: 2016-01-06
+date: 2016-01-07
 parent: "Connect a Data Source"
 ---
 Drill 1.1 and later supports Hive 1.0. To access Hive tables
@@ -10,8 +10,7 @@ must have the SerDes or InputFormat/OutputFormat `JAR` files in the
 
 You can run Hive queries in the following ways by configuring the Hive storage plugin as described in this document:
 
-* [Connect Drill to the Hive remote metastore directly]({{site.baseurl}}/docs/hive-storage-plugin/#connect-drill-to-the-hive-remote-metastore-directly)  
-* [Connect Drill to HBase to query the Hive remote metastore indirectly]({{site.baseurl}}/docs/hive-storage-plugin/#connect-drill-to-hbase-to-query-the-hive-remote-metastore-indirectly)  
+* [Connect Drill to the Hive remote metastore]({{site.baseurl}}/docs/hive-storage-plugin/#connect-drill-to-the-hive-remote-metastore-directly)  
 * [Connect to the Hive embedded metastore]({{site.baseurl}}/docs/hive-storage-plugin/#connect-to-the-hive-embedded-metastore)  
 
 You update the Hive storage plugin by selecting the **Storage tab** on the [Drill Web Console]({{ site.baseurl }}/docs/plugin-configuration-basics/#using-the-drill-web-console). From the list of disabled storage plugins in the Drill Web Console, click **Update** next to `hive`.  The default Hive storage plugin configuration appears as follows:
@@ -28,19 +27,21 @@ You update the Hive storage plugin by selecting the **Storage tab** on the [Dril
           }
         }
 
-## Connect Drill to the Hive Remote Metastore Directly
+## Connect Drill to the Hive Remote Metastore
 
 The Hive metastore runs as a separate service outside
-of Hive. Drill can query the Hive metastore directly through Thrift. The
-metastore service communicates with the Hive database over JDBC. Point Drill
-to the Hive metastore service address, and provide the connection parameters
-in a Hive storage plugin configuration to configure a connection to Drill as shown in the following procedure.
+of Hive. Drill can query the Hive metastore through Thrift. The
+metastore service communicates with the Hive database over JDBC. 
+
+Follow the steps in the next section to point Drill
+to the Hive metastore service address. Provide the connection parameters
+in a Hive storage plugin configuration to configure a connection to Drill. At this point, if you query data sources that Drill supports other than HBase (or MapR), you are finished configuring the Hive storage plugin. If you query HBase using Hive, you need to add ZooKeeper quorum and port properties.  The HBaseStorageHandler requires these properties. Drill discovers HBase services using these properties. If you use the HBase storage plugin, the ZooKeeper quorum and port properties in the Hive storage plugin are the same as those in the HBase storage plugin, assuming you want to use the same HBase database. 
 
 {% include startnote.html %}Verify that the Hive metastore service is running before you register the Hive metastore.{% include endnote.html %}  
 
 ### Hive Remote Metastore Configuration
 
-To register a remote Hive metastore with Drill:
+To connect Drill to a remote Hive metastore:
 
 1. Issue the following command to start the Hive metastore service on the system specified in the `hive.metastore.uris`:  
    `hive --service metastore`
@@ -65,30 +66,7 @@ To register a remote Hive metastore with Drill:
             }
           }
 
-6. Click **Enable**.  
-
-## Connect Drill to HBase to Query the Hive Remote Metastore Indirectly
-
-You can connect to HBase (or MapR) and query the Hive remote metastore indirectly. You need to update the default Hive storage plugin to add the following things:
-
-* The Thrift URI and port  
-* The default location of files  
-* ZooKeeper quorum and port properties expected by the HBaseStorageHandler.  
-  Drill discovers HBase services using these properties.
-
-If you use the HBase storage plugin, the ZooKeeper quorum and port properties that you add to the Hive storage plugin are the same, assuming you want to use the same HBase database. 
-
-### Hive Remote Metastore Configuration Through HBase
-
-To register a remote Hive metastore with Drill through HBase:
-
-1. Issue the following command to start the Hive metastore service on the system specified in the `hive.metastore.uris`:  
-   `hive --service metastore`
-2. In the [Drill Web Console]({{ site.baseurl }}/docs/plugin-configuration-basics/#using-the-drill-web-console), select the **Storage** tab.
-3. In the list of disabled storage plugins in the Drill Web Console, click **Update** next to `hive`.  
-4. In the configuration window, add the `Thrift URI` and port to `hive.metastore.uris` as [described earlier]({{site.baseurl}}/docs/hive-storage-plugin/#connect-drill-to-the-hive-remote-metastore-directly).  
-5. Change the default location of files to suit your environment as [described earlier]({{site.baseurl}}/docs/hive-storage-plugin/#connect-drill-to-the-hive-remote-metastore-directly).  
-6. In the configuration window, add the names of the ZooKeeper quorum hosts and the ZooKeeper port, for example 2181.  
+6. If you do not query HBase, skip this step. If you query HBase, in the configuration window, add the names of the ZooKeeper quorum hosts and the ZooKeeper port, for example 2181.  
 
         {
           "type": "hive",
